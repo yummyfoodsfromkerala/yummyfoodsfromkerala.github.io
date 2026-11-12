@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yummy Foods From Kerala</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #0B1F3A;
+            --primary-gold: #C8A35C;
+            --bg-color: #F8F9FA;
+            --text-gray: #6C757D;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 75px 10px 20px 10px; 
+            color: var(--primary-dark);
+            overflow-x: hidden;
+            position: relative;
+            
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+
+        /* =========================================
+           Professional Sticky Header
+           ========================================= */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65px; 
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 999;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .header-left-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: 0.5px;
+        }
+
+        .header-right-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .header-right-icon {
+            color: #FF0000;
+            font-size: 1.8rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .header-right-link:hover .header-right-icon {
+            transform: scale(1.1);
+        }
+        /* ========================================= */
+
+        /* --- Prevent dragging and saving media --- */
+        img, video {
+            pointer-events: auto; 
+            -webkit-user-drag: none; 
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        .no-save {
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* --- Subscribe Video Overlay --- */
+        #subscribe-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        #subscribe-overlay video {
+            width: 100%; max-width: 400px; max-height: 70vh; border-radius: 15px;
+            box-shadow: 0 0 30px rgba(200, 163, 92, 0.3);
+            pointer-events: none;
+        }
+        #goto-youtube-btn {
+            display: none; margin-top: 20px; background: linear-gradient(135deg, #d4af37, #C8A35C);
+            color: var(--primary-dark); padding: 15px 35px; border-radius: 30px;
+            font-size: 1rem; font-weight: 600; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(200, 163, 92, 0.5); transition: all 0.3s ease;
+            align-items: center; gap: 10px; cursor: pointer; animation: zoomIn 0.5s ease;
+        }
+        #goto-youtube-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(200, 163, 92, 0.8); }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- Puzzle Game Overlay --- */
+        #puzzle-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(11, 31, 58, 0.98); z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+            -webkit-user-select: none; -ms-user-select: none; user-select: none;
+        }
+
+        #puzzle-title {
+            color: var(--primary-gold); font-family: 'Playfair Display', serif;
+            font-size: 1.8rem; margin-bottom: 8px; letter-spacing: 1px;
+        }
+
+        .puzzle-instruction {
+            color: #d1d5db;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        #puzzle-dev-credit {
+            color: var(--primary-gold);
+            font-size: 0.75rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* 8-Piece Sliding Puzzle Board */
+        #puzzle-board {
+            width: 300px; height: 300px;
+            background-color: #5c3a21;
+            border: 4px solid var(--primary-gold); border-radius: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+            gap: 4px; padding: 4px; position: relative; overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* Individual pieces (Numbers) */
+        .puzzle-piece {
+            width: 100%; height: 100%;
+            background-color: #8B5A2B; 
+            color: white; 
+            font-size: 2rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; 
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            -webkit-user-select: none; -ms-user-select: none; user-select: none; 
+        }
+        
+        .puzzle-piece:hover { background-color: #a06b36; }
+        .puzzle-piece:active { transform: scale(0.95); }
+        
+        /* Empty slot */
+        .puzzle-piece.empty {
+            background-color: transparent;
+            box-shadow: none;
+            cursor: default;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        .puzzle-piece.empty span { display: none; }
+
+        /* =========================================
+           Fullscreen Dev Video Overlay 
+           ========================================= */
+        #dev-video-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 10002; 
+            display: none; 
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #dev-video-overlay video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            pointer-events: none; 
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Dynamic Seasonal Greeting Banner --- */
+        .seasonal-banner {
+            display: none; width: 100%; max-width: 800px;
+            background: linear-gradient(90deg, #4a148c, #7b1fa2);
+            color: white; padding: 15px 20px; border-radius: 50px; margin-bottom: 20px;
+            text-align: center; box-shadow: 0 8px 25px rgba(123, 31, 162, 0.4);
+            font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; z-index: 100;
+            align-items: center; justify-content: center; gap: 15px;
+            animation: slideDown 0.8s ease-out;
+        }
+        .seasonal-banner i { font-size: 1.3rem; animation: pulse 1.5s infinite; }
+        .seasonal-banner.diwali { background: linear-gradient(135deg, #4a148c, #7b1fa2, #e65100); border: 1px solid #ffcc80; text-shadow: 0 0 10px rgba(255, 204, 128, 0.8); }
+        
+        .seasonal-banner.newyear { 
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #0B1F3A); 
+            border: 1px solid var(--primary-gold); 
+            text-shadow: 0 0 10px rgba(200, 163, 92, 0.8); 
+            box-shadow: 0 8px 25px rgba(11, 31, 58, 0.6);
+        }
+
+        .diya-decor { position: fixed; font-size: 1.5rem; opacity: 0.7; animation: floatDiya 4s infinite ease-in-out; z-index: -1; pointer-events: none; }
+        @keyframes floatDiya { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } 50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,255,255,1); } 100% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } }
+
+        /* --- Background Animation --- */
+        .bg-bubbles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+        .bg-bubbles li { position: absolute; list-style: none; display: block; width: 20px; height: 20px; background: rgba(200, 163, 92, 0.1); bottom: -150px; border-radius: 50%; animation: floatUp 15s infinite linear; }
+        .bg-bubbles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bg-bubbles li:nth-child(2) { left: 10%; width: 40px; height: 40px; animation-delay: 2s; animation-duration: 12s; }
+        .bg-bubbles li:nth-child(3) { left: 70%; width: 50px; height: 50px; animation-delay: 4s; }
+        .bg-bubbles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bg-bubbles li:nth-child(5) { left: 65%; width: 30px; height: 30px; animation-delay: 0s; }
+        .bg-bubbles li:nth-child(6) { left: 85%; width: 90px; height: 90px; animation-delay: 3s; }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 50%; } 100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 20%; } }
+
+        /* --- Welcome Screen --- */
+        #welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--primary-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.8s ease, visibility 0.8s ease; padding: 20px; text-align: center; }
+        #welcome-screen.hidden { opacity: 0; visibility: hidden; }
+        .welcome-title { font-family: 'Playfair Display', serif; color: var(--primary-gold); font-size: 2.8rem; line-height: 1.2; margin-bottom: 10px; text-transform: uppercase; animation: zoomIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .welcome-subtitle { color: #d1d5db; font-size: 0.9rem; margin-bottom: 30px; font-weight: 300; animation: fadeInUp 1s ease 0.3s both; }
+        .continue-btn { background-color: var(--primary-gold); color: var(--primary-dark); border: none; padding: 15px 45px; font-size: 1.1rem; font-weight: 600; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; animation: fadeInUp 1s ease 0.6s both; }
+        .continue-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(200, 163, 92, 0.6); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Main Content Layout --- */
+        .layout-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; opacity: 0; transition: opacity 1s ease; gap: 25px; z-index: 1; }
+        .layout-wrapper.show { opacity: 1; }
+
+        /* Video Section */
+        .video-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .video-tagline { font-size: 0.75rem; color: var(--primary-gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; text-align: center; display: block; }
+        
+        /* Link wrapper for the video */
+        .video-link-wrapper {
+            display: block;
+            width: 100%;
+            max-width: 360px;
+            height: 60vh;
+            max-height: 600px;
+            border-radius: 20px;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .video-container { 
+            width: 100%; 
+            height: 100%; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 20px rgba(200, 163, 92, 0.2); 
+            background-color: #000; 
+            position: relative; 
+            cursor: pointer;
+        }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .scroll-down { margin-top: 15px; display: flex; flex-direction: column; align-items: center; color: var(--primary-gold); font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; animation: bounce 2s infinite; }
+        .scroll-down i { font-size: 1.2rem; margin-top: 5px; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+
+        /* Main Card Section */
+        .main-card { width: 100%; max-width: 800px; background: #ffffff; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+        @media (min-width: 1200px) {
+            body { justify-content: center; }
+            .layout-wrapper { flex-direction: row; align-items: stretch; justify-content: center; max-width: 1050px; gap: 30px; }
+            .video-wrapper { width: 380px; flex-shrink: 0; justify-content: center; }
+            .video-link-wrapper { height: 100%; max-height: 550px; aspect-ratio: 9 / 16; max-width: 380px; }
+            .scroll-down { display: none; } 
+            .main-card { flex-direction: row; flex-grow: 1; max-width: 750px; height: auto; }
+            .info-content { padding: 35px 30px; } 
+            .qr-section { padding: 40px 20px; }
+        }
+
+        /* Card Left Side (QR) */
+        .qr-section { flex: 1; padding: 40px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #eee; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%); }
+        .qr-section h3 { font-size: 0.8rem; letter-spacing: 2px; color: var(--primary-dark); margin-bottom: 10px; font-weight: 600; }
+        .qr-section p.desc { font-size: 0.7rem; color: var(--text-gray); margin-bottom: 20px; max-width: 180px; line-height: 1.4; }
+        .qr-box { background: white; padding: 15px; border-radius: 24px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transition: transform 0.3s ease; }
+        .qr-box:hover { transform: scale(1.02); }
+        .qr-box img { width: 100%; height: 100%; border-radius: 12px; object-fit: contain; pointer-events: none; }
+        .qr-section .scan-text { font-size: 0.75rem; letter-spacing: 3px; font-weight: 600; color: var(--primary-dark); }
+
+        /* Card Right Side (Info) */
+        .info-section { flex: 1.5; display: flex; flex-direction: column; }
+        .info-content { padding: 30px; flex-grow: 1; }
+        .top-tags { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .yt-brand { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; }
+        .yt-brand i { color: #FF0000; font-size: 1.2rem; }
+        .category-tag { border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+        .main-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; line-height: 1.1; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 10px; text-align: center; background: linear-gradient(to right, #0B1F3A, #2a4b75); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--primary-gold), transparent); margin: 15px 0; width: 100%; }
+        .about-text { font-size: 0.75rem; color: var(--text-gray); text-align: center; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
+
+        /* Latest Video Section */
+        .latest-video-section { margin-bottom: 25px; background: #fdfbf7; border: 1px solid #f0e6d2; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .latest-video-title { font-size: 0.85rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .latest-video-title i { color: #FF0000; font-size: 1.1rem; }
+        
+        /* Updated Video Container for YouTube */
+        .video-iframe-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; }
+        .video-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: transform 0.3s ease; }
+        .video-placeholder:hover { transform: scale(1.02); }
+        .play-btn-overlay { width: 50px; height: 50px; background: rgba(200, 163, 92, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; padding-left: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: background 0.3s ease; }
+        .video-placeholder:hover .play-btn-overlay { background: #FF0000; }
+
+        .channel-info { text-align: center; margin-bottom: 25px; }
+        .channel-info small { font-size: 0.7rem; letter-spacing: 1px; color: var(--text-gray); font-weight: 600; display: block; margin-bottom: 8px; }
+        .channel-id-box { display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; border-radius: 30px; padding: 5px 5px 5px 15px; margin: 0 auto; max-width: 360px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .channel-id-box span { font-size: 0.75rem; font-weight: 500; color: var(--primary-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .gold-subscribe-btn { position: relative; overflow: hidden; background: linear-gradient(135deg, #d4af37, #C8A35C); color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 4px 15px rgba(200, 163, 92, 0.4); transition: all 0.3s ease; cursor: pointer; border: none; font-family: inherit; }
+        .gold-subscribe-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: shine 3s infinite; }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        .gold-subscribe-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200, 163, 92, 0.6); }
+        
+        .verified { font-size: 0.7rem; color: var(--text-gray); margin-top: 10px; }
+        .verified strong { color: var(--primary-dark); letter-spacing: 1px; }
+
+        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .feature-item { border: 1px solid #eee; border-radius: 12px; padding: 15px 10px; text-align: center; background: #fff; transition: all 0.3s ease; }
+        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary-gold); }
+        .feature-item i { color: var(--primary-gold); font-size: 1.3rem; margin-bottom: 8px; transition: transform 0.3s ease; }
+        .feature-item:hover i { transform: scale(1.2); }
+        .feature-item h4 { font-size: 0.75rem; color: var(--primary-dark); margin-bottom: 4px; }
+        .feature-item p { font-size: 0.65rem; color: var(--text-gray); line-height: 1.3; }
+
+        /* Contact Section */
+        .contact-section { margin-top: 25px; padding-top: 20px; border-top: 1px dashed #eee; text-align: center; }
+        .contact-title { font-size: 0.85rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .contact-text { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 15px; }
+        .insta-dm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 25px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; text-decoration: none; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); transition: all 0.3s ease; }
+        .insta-dm-btn i { font-size: 1.2rem; }
+        .insta-dm-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 6px 20px rgba(220, 39, 67, 0.5); }
+
+        .bottom-bar { background-color: var(--primary-dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; transition: all 0.3s ease; }
+        .bottom-bar:hover { background-color: #15305c; padding-left: 35px; }
+        .bottom-bar span { font-size: 0.7rem; letter-spacing: 1px; font-weight: 500; }
+        .bottom-bar .icons { display: flex; gap: 15px; font-size: 1rem; }
+
+        /* =========================================
+           Footer Creator Credit (Hide 5s, Show 2s)
+           ========================================= */
+        .creator-credit { 
+            width: 100%; max-width: 1050px; 
+            text-align: center; padding: 25px 0 10px 0; margin-top: 10px; 
+            height: 40px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .creator-credit a { 
+            color: var(--text-gray); 
+            font-size: 0.75rem; 
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+            
+            /* Animation: Total 7 seconds cycle */
+            /* 2s visible, 5s hidden */
+            animation: blinkText 7s infinite;
+        }
+
+        @keyframes blinkText {
+            0%, 28.5% { opacity: 1; }  /* Visible for ~2 seconds */
+            30%, 100% { opacity: 0; }  /* Hidden for ~5 seconds */
+        }
+        
+        .creator-credit a:hover { 
+            color: var(--primary-dark); 
+            animation-play-state: paused; 
+        }
+
+        @media (max-width: 1200px) {
+            .qr-section { border-right: none; border-bottom: 1px solid #eee; padding: 30px 20px; }
+            .features { grid-template-columns: 1fr; }
+            .feature-item { display: flex; align-items: center; text-align: left; gap: 15px; padding: 12px 15px; }
+            .feature-item i { margin-bottom: 0; font-size: 1.5rem; }
+            .bottom-bar { flex-direction: column; gap: 10px; text-align: center; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Professional Sticky Header with Logo on Right -->
+    <header class="top-header">
+        <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="header-left-link">
+            <div class="header-title">Yummy Foods From Kerala</div>
+        </a>
+        <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="header-right-link">
+            <i class="fab fa-youtube header-right-icon"></i>
+        </a>
+    </header>
+
+    <!-- Subscribe Video Overlay -->
+    <div id="subscribe-overlay">
+        <video id="subscribe-video" playsinline class="no-save">
+            <source src="subscribe.webm" type="video/webm">
+        </video>
+        <a id="goto-youtube-btn" href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" onclick="closeOverlay()">
+            Go to YouTube Channel <i class="fab fa-youtube"></i>
+        </a>
+    </div>
+
+    <!-- Fullscreen Dev Video Overlay (Shows after puzzle is solved) -->
+    <div id="dev-video-overlay">
+        <video id="dev-video" playsinline class="no-save">
+            <source src="dev.webm" type="video/webm">
+        </video>
+    </div>
+
+    <!-- Puzzle Game Overlay -->
+    <div id="puzzle-overlay">
+        <h2 id="puzzle-title">Solve the Puzzle!</h2>
+        <p class="puzzle-instruction">Slide the numbers 1 to 8 into the correct order.</p>
+        <p id="puzzle-dev-credit">Solve it to reveal the Developer!</p>
+        
+        <div id="puzzle-board"></div>
+    </div>
+
+    <!-- Background Animation -->
+    <ul class="bg-bubbles">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+    <!-- Dynamic Seasonal Greeting Banner -->
+    <div id="festival-banner" class="seasonal-banner">
+        <i class="fas fa-star"></i>
+        <span id="festival-text">Happy Festival!</span>
+        <i class="fas fa-star"></i>
+    </div>
+
+    <!-- Welcome Screen (Updated with Full Channel Name) -->
+    <div id="welcome-screen">
+        <h1 class="welcome-title">Welcome to<br>Yummy Foods From Kerala</h1>
+        <p class="welcome-subtitle">Your ultimate guide to Kerala's flavors & hidden gems.</p>
+        <button id="continue-btn" class="continue-btn">
+            Start Exploring <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="layout-wrapper" id="main-content">
+        
+        <!-- Video Wrapper -->
+        <div class="video-wrapper" id="video-wrapper">
+            <span class="video-tagline">Watch Our Latest Adventure</span>
+            
+            <!-- Wrapped Video Container in a link to YouTube -->
+            <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="video-link-wrapper">
+                <div class="video-container" id="video-container">
+                    <video id="bg-video" loop muted playsinline preload="auto" class="no-save">
+                        <source src="Start.webm" type="video/webm">
+                    </video>
+                </div>
+            </a>
+            
+            <div class="scroll-down">
+                <span>SCROLL DOWN</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="main-card" id="main-card">
+            
+            <!-- QR Code -->
+            <div class="qr-section">
+                <h3>SCAN WITH GOOGLE LENS</h3>
+                <p class="desc">Point your camera here to instantly subscribe to our channel.</p>
+                <div class="qr-box">
+                    <img src="qr.png?v=2" alt="QR Code" class="no-save">
+                </div>
+                <p class="scan-text">SCAN & SUBSCRIBE</p>
+            </div>
+
+            <!-- Info -->
+            <div class="info-section">
+                <div class="info-content">
+                    <div class="top-tags">
+                        <div class="yt-brand"><i class="fab fa-youtube"></i> YOUTUBE CHANNEL</div>
+                        <div class="category-tag">FOOD & TRAVEL</div>
+                    </div>
+
+                    <h1 class="main-title">Yummy Foods<br>From Kerala</h1>
+                    <div class="divider"></div>
+                    
+                    <p class="about-text">
+                        Welcome to our channel! We are on a mission to explore the authentic, mouth-watering dishes and the best restaurants hidden across God's Own Country. From street food to fine dining, we bring you honest reviews and beautiful travel stories. Join us and satisfy your wanderlust and cravings!
+                    </p>
+
+                    <!-- Latest Video Highlight Section (With Intersection Observer for Auto-play) -->
+                    <div class="latest-video-section">
+                        <div class="latest-video-title">
+                            <i class="fab fa-youtube"></i> Watch Our Latest Video
+                        </div>
+                        
+                        <div class="video-iframe-container" id="video-observer-target">
+                            <div id="youtube-player"></div>
+                            
+                            <div class="video-placeholder" id="latest-thumbnail" onclick="playYouTubeVideo()">
+                                <div class="play-btn-overlay">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="channel-info">
+                        <small>CHANNEL ID</small>
+                        <div class="channel-id-box">
+                            <span>yummyfoodsfromkerala-oz2vj</span>
+                            <button class="gold-subscribe-btn" onclick="playSubscribeAnimation()">
+                                SUBSCRIBE <i class="fab fa-youtube"></i>
+                            </button>
+                        </div>
+                        <div class="verified"><strong>VERIFIED</strong> Personal Channel • Not a business</div>
+                    </div>
+
+                    <div class="features">
+                        <div class="feature-item">
+                            <i class="fas fa-utensils"></i>
+                            <div>
+                                <h4>Food Exploration</h4>
+                                <p>Tasting authentic local flavors.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-wine-glass-alt"></i>
+                            <div>
+                                <h4>Restaurant Reviews</h4>
+                                <p>100% honest & unbiased reviews.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <div>
+                                <h4>Travel Stories</h4>
+                                <p>Exploring hidden gems in Kerala.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact / DM Section -->
+                    <div class="contact-section">
+                        <h3 class="contact-title">Contact / Collab</h3>
+                        <p class="contact-text">For restaurant promotions & business inquiries, DM us:</p>
+                        
+                        <div class="contact-links">
+                            <!-- Instagram Direct DM Link -->
+                            <a href="https://ig.me/m/yummfoods144" target="_blank" rel="noopener noreferrer" class="insta-dm-btn">
+                                <i class="fab fa-instagram"></i> DM us on Instagram
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <a href="https://youtube.com/@yummyfoodsfromkerala-oz2vj" target="_blank" rel="noopener noreferrer" class="bottom-bar">
+                    <span>SCAN THE QR CODE AND SUBSCRIBE TO OUR CHANNEL</span>
+                    <div class="icons">
+                        <i class="fas fa-thumbs-up"></i>
+                        <i class="fas fa-share"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Creator Credit (Hide 5s, Show 2s) -->
+    <div class="creator-credit">
+        <a href="javascript:void(0)" onclick="startPuzzle()">
+            Design and Developer: Bg
+        </a>
+    </div>
+
+    <!-- YouTube Iframe API Script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // =================================================================
+        // ⬇️ ഇവിടെ മാത്രം നിങ്ങളുടെ പുതിയ വീഡിയോയുടെ ലിങ്ക് കോപ്പി ചെയ്ത് പേസ്റ്റ് ചെയ്യുക ⬇️
+        // =================================================================
+        const youtubeLink = "https://youtu.be/VEEjpUFxISY"; 
+        // =================================================================
+
+        let latestVideoId = "";
+        let ytPlayer; 
+        let isYouTubePlaying = false;
+
+        // ==========================================
+        // DISABLE RIGHT CLICK & DRAG (Except for YouTube Iframe)
+        // ==========================================
+        document.addEventListener('contextmenu', function(event) {
+            if (event.target.closest('.video-iframe-container')) {
+                return; 
+            }
+            event.preventDefault();
+        });
+
+        document.addEventListener('dragstart', function(event) {
+            if (event.target.nodeName === 'IMG' || event.target.nodeName === 'VIDEO') {
+                event.preventDefault();
+            }
+        });
+        // ==========================================
+
+
+        // ==========================================
+        // PUZZLE GAME LOGIC (8-Piece Sliding)
+        // ==========================================
+        let puzzleState = []; 
+        let emptyIndex = 8; 
+        let videoTimeout;
+
+        function startPuzzle() {
+            const overlay = document.getElementById('puzzle-overlay');
+            const board = document.getElementById('puzzle-board');
+            
+            overlay.style.display = 'flex';
+            clearTimeout(videoTimeout);
+            
+            history.pushState({ puzzle: 'open' }, '');
+            document.getElementById('bg-video').pause();
+
+            board.innerHTML = '';
+
+            puzzleState = [1, 2, 3, 4, 5, 6, 7, 8, 0]; 
+            emptyIndex = 8;
+
+            for (let i = 0; i < 100; i++) {
+                const validMoves = getValidMoves(emptyIndex);
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                
+                puzzleState[emptyIndex] = puzzleState[randomMove];
+                puzzleState[randomMove] = 0;
+                emptyIndex = randomMove;
+            }
+
+            renderBoard();
+        }
+
+        function getValidMoves(emptyIdx) {
+            const moves = [];
+            const row = Math.floor(emptyIdx / 3);
+            const col = emptyIdx % 3;
+
+            if (row > 0) moves.push(emptyIdx - 3); 
+            if (row < 2) moves.push(emptyIdx + 3); 
+            if (col > 0) moves.push(emptyIdx - 1); 
+            if (col < 2) moves.push(emptyIdx + 1); 
+            return moves;
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('puzzle-board');
+            board.innerHTML = '';
+
+            puzzleState.forEach((num, index) => {
+                const piece = document.createElement('div');
+                piece.classList.add('puzzle-piece');
+                
+                if (num === 0) {
+                    piece.classList.add('empty');
+                } else {
+                    const span = document.createElement('span');
+                    span.innerText = num;
+                    piece.appendChild(span);
+                }
+                
+                piece.onclick = () => movePiece(index);
+                board.appendChild(piece); 
+            });
+        }
+
+        function movePiece(clickedIndex) {
+            if (document.getElementById('puzzle-board').classList.contains('solved')) return;
+
+            const validMoves = getValidMoves(emptyIndex);
+            
+            if (validMoves.includes(clickedIndex)) {
+                puzzleState[emptyIndex] = puzzleState[clickedIndex];
+                puzzleState[clickedIndex] = 0;
+                emptyIndex = clickedIndex;
+                
+                renderBoard();
+                checkWin();
+            }
+        }
+
+        function checkWin() {
+            let isSolved = true;
+            for (let i = 0; i < 8; i++) {
+                if (puzzleState[i] !== i + 1) {
+                    isSolved = false;
+                    break;
+                }
+            }
+
+            if (isSolved) {
+                const puzzleOverlay = document.getElementById('puzzle-overlay');
+                const devVideoOverlay = document.getElementById('dev-video-overlay');
+                const devVideo = document.getElementById('dev-video');
+                
+                // Hide Puzzle
+                puzzleOverlay.style.display = 'none';
+                
+                // Show Video
+                devVideoOverlay.style.display = 'flex';
+                devVideo.currentTime = 0;
+                devVideo.play();
+
+                // When video ends, hide overlay
+                devVideo.onended = function() {
+                    devVideoOverlay.style.display = 'none';
+                };
+            }
+        }
+
+        function closePuzzle() {
+            document.getElementById('puzzle-overlay').style.display = 'none';
+            const devVideoOverlay = document.getElementById('dev-video-overlay');
+            const devVideo = document.getElementById('dev-video');
+            
+            devVideoOverlay.style.display = 'none';
+            devVideo.pause();
+            clearTimeout(videoTimeout); 
+        }
+
+
+        // ==========================================
+        // SUBSCRIBE ANIMATION & CLOSE LOGIC
+        // ==========================================
+        function playSubscribeAnimation() {
+            const overlay = document.getElementById('subscribe-overlay');
+            const video = document.getElementById('subscribe-video');
+            const gotoBtn = document.getElementById('goto-youtube-btn');
+
+            history.pushState({ overlay: 'open' }, '');
+            gotoBtn.style.display = 'none';
+            overlay.style.display = 'flex';
+            video.currentTime = 0; 
+            video.play();
+            document.getElementById('bg-video').pause();
+
+            video.onended = function() {
+                gotoBtn.style.display = 'inline-flex';
+            };
+        }
+
+        function closeOverlay() {
+            const overlay = document.getElementById('subscribe-overlay');
+            const video = document.getElementById('subscribe-video');
+            overlay.style.display = 'none';
+            video.pause();
+        }
+
+        window.addEventListener('popstate', function(event) {
+            const subOverlay = document.getElementById('subscribe-overlay');
+            const puzOverlay = document.getElementById('puzzle-overlay');
+            const devOverlay = document.getElementById('dev-video-overlay');
+            
+            if (subOverlay.style.display === 'flex') {
+                closeOverlay();
+            }
+            if (puzOverlay.style.display === 'flex' || devOverlay.style.display === 'flex') {
+                closePuzzle();
+            }
+        });
+
+        // ==========================================
+        // FESTIVAL LOGIC (Date based)
+        // ==========================================
+        function checkFestival() {
+            const today = new Date();
+            const month = today.getMonth() + 1; 
+            const day = today.getDate();
+            const banner = document.getElementById('festival-banner');
+            const text = document.getElementById('festival-text');
+
+            // --- NEW YEAR (Jan 1st) ---
+            if (month === 1 && day === 1) {
+                banner.style.display = 'flex';
+                banner.classList.add('newyear');
+                text.innerHTML = "🎉 Happy New Year! 🎉<br><span style='font-size:0.75rem; font-weight:normal;'>Wishing you a prosperous and delicious year ahead!</span>";
+            }
+            // --- DIWALI (Nov 8th) ---
+            else if (month === 11 && day === 8) {
+                banner.style.display = 'flex';
+                banner.classList.add('diwali');
+                text.innerHTML = "✨ Happy Diwali! ✨<br><span style='font-size:0.75rem; font-weight:normal;'>Wishing you a festival of lights and joy!</span>";
+                createDiyaDecorations();
+            }
+            // --- CHRISTMAS (Dec 25th) ---
+            else if (month === 12 && day === 25) {
+                banner.style.display = 'flex';
+                banner.classList.add('christmas');
+                text.innerHTML = "🎄 Merry Christmas! 🎄<br><span style='font-size:0.75rem; font-weight:normal;'>May your days be merry and bright!</span>";
+            }
+        }
+
+        function createDiyaDecorations() {
+            for (let i = 0; i < 5; i++) {
+                const diya = document.createElement('div');
+                diya.classList.add('diya-decor');
+                diya.innerHTML = '🪔'; 
+                diya.style.left = Math.random() * 80 + 10 + '%';
+                diya.style.top = Math.random() * 80 + 10 + '%';
+                diya.style.animationDelay = Math.random() * 3 + 's';
+                document.body.appendChild(diya);
+            }
+        }
+
+        // ==========================================
+        // MAIN LOGIC (YouTube API & Auto-Play on Scroll)
+        // ==========================================
+        function extractVideoID(url) {
+            url = url.trim(); 
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function setThumbnail() {
+            latestVideoId = extractVideoID(youtubeLink);
+            if (latestVideoId) {
+                const thumbnailDiv = document.getElementById('latest-thumbnail');
+                thumbnailDiv.style.backgroundImage = `url('https://img.youtube.com/vi/${latestVideoId}/hqdefault.jpg')`;
+            }
+        }
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: latestVideoId,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const bgVideo = document.getElementById('bg-video');
+            
+            // If YouTube video plays, pause the background video (Only on Desktop)
+            if (window.innerWidth > 1200) {
+                if (event.data == YT.PlayerState.PLAYING) {
+                    bgVideo.pause();
+                    isYouTubePlaying = true;
+                } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
+                    bgVideo.play().catch(e => console.log(e));
+                    isYouTubePlaying = false;
+                }
+            }
+        }
+
+        function playYouTubeVideo() {
+            document.getElementById('latest-thumbnail').style.display = 'none';
+            ytPlayer.playVideo();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setThumbnail();
+            checkFestival();
+
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const continueBtn = document.getElementById('continue-btn');
+            const mainContent = document.getElementById('main-content');
+            const bgVideo = document.getElementById('bg-video'); 
+            const mainCard = document.getElementById('main-card');
+            const videoWrapper = document.getElementById('video-wrapper');
+
+            const MAX_SCROLL_DISTANCE = 500; 
+            let isVideoPlaying = false;
+
+            continueBtn.addEventListener('click', () => {
+                welcomeScreen.classList.add('hidden');
+                mainContent.classList.add('show');
+                
+                bgVideo.muted = false; 
+                bgVideo.volume = 1.0; 
+                
+                bgVideo.play().then(() => {
+                    isVideoPlaying = true;
+                }).catch(error => {
+                    console.log("Autoplay blocked. Playing muted.", error);
+                    bgVideo.muted = true;
+                    bgVideo.play();
+                    isVideoPlaying = true;
+                });
+
+                if (window.innerWidth <= 1200) {
+                    setTimeout(() => {
+                        window.scrollBy({ top: 250, behavior: 'smooth' }); 
+                        setTimeout(() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 1000); 
+                    }, 2000); 
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.innerWidth <= 1200) {
+                    if (bgVideo.paused) {
+                        bgVideo.play().catch(e => {});
+                    }
+
+                    let scrollY = window.scrollY || document.documentElement.scrollTop;
+                    let newVolume = 1 - (scrollY / MAX_SCROLL_DISTANCE);
+
+                    if (newVolume < 0) newVolume = 0;
+                    if (newVolume > 1) newVolume = 1;
+
+                    bgVideo.volume = newVolume;
+                }
+            });
+
+            // ==========================================
+            // Auto-Play YouTube Video on Scroll (Intersection Observer)
+            // ==========================================
+            const observerTarget = document.getElementById('video-observer-target');
+            let hasPlayedAuto = false; 
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Changed threshold to 0.1 for better detection on all devices
+                    if (entry.isIntersecting && !hasPlayedAuto) {
+                        if (document.getElementById('latest-thumbnail').style.display !== 'none') {
+                            playYouTubeVideo(); 
+                            hasPlayedAuto = true;
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when just 10% of the video is visible
+            });
+
+            if (observerTarget) {
+                observer.observe(observerTarget);
+            }
+        });
+    </script>
+</body>
+</html>
